@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use DB;
+
+class UcouponsController extends Controller
+{	
+	
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return view('userCoupons');
+    }
+
+    //用户数据
+    public function getUser(Request $request)
+    {
+        $arr = [];
+        $d = $request -> all();
+        foreach($d as $k => $v) {
+            switch ($k) {
+                case 'phone':
+                    array_push($arr,["$k",'=',"$v"]);
+                    break;
+                case 'usetime':
+                    array_push($arr,["$k",'=',strtotime($v)]);
+                    break;
+                case 'name':
+                    array_push($arr,["coupons.coupon_name",'like',"%$v%"]);
+                    break;
+                case 'order_num':
+                    array_push($arr,["$k",'=',"$v"]);
+                    break;
+            }
+            foreach($arr as $key => $val) {
+                if(!$val[2]) {
+                    unset($arr[$key]);
+                }
+            }
+        }
+        if($arr) {
+            $data = DB::table('user_coupon') -> join('users','user_coupon.userid','=','users.id') -> join('coupons','user_coupon.coupon_id','=','coupons.id')
+                    -> where($arr) -> get();
+        }else{
+    	    $data = DB::table('user_coupon') -> join('users','user_coupon.userid','=','users.id') -> join('coupons','user_coupon.coupon_id','=','coupons.id') -> get();
+        }
+    	return $data;
+    }
+    
+    //使用优惠券
+    public function useCou(Request $request)
+    {
+        $order_num = $request -> input('order_num');
+        $data['usetime'] = time();
+        $data['order_num'] = $order_num;
+        $res = DB::table('user_coupon') -> where('id','=',$id) -> update($data);
+    }
+}

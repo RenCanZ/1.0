@@ -1,0 +1,99 @@
+<?php
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// Route::get('user/index','UserController@index');
+// //ajax删除
+// Route::post('user/destroy','UserController@destroy');
+// //返回添加页面
+// Route::get('user/create','UserController@create');
+// //执行添加
+// Route::post('user/store','UserController@store');
+// //ajax修改
+// Route::post('user/update','UserController@update');
+//资源控制器
+// Route::resource('user','UserController')->middleware('login');
+// //后台登录路由
+// Route::get('/admin/login','LoginController@login');
+// //执行登录路由
+// Route::post('/admin/dologin','LoginController@dologin');
+// //注册路由
+// Route::get('signup','Home\SignController@signup');
+// //注册验证码路由
+// Route::post('proof','Home\SignController@proof');
+// //校验验证码
+// Route::get('doproof','Home\SignController@doproof');
+// //验证用户名可用
+// Route::get('uname','Home\SignController@uname');
+//执行注册路由
+// Route::post('dosignup','Home\SignController@dosignup');
+ //添加用户
+Route::get('/admin/adduser','Admin\UserController@adduser');
+Route::get('/admin/addopenid','Admin\UserController@addopenid');
+Route::get('/admin/addphone','Admin\UserController@addphone');
+//储存优惠券
+Route::get('/admin/setCoupons','Admin\CouponController@setCoupons');
+//读取优惠券
+Route::get('/admin/getCoupons','Admin\CouponController@getCoupons');
+//领取优惠券
+Route::get('/admin/receiveCoupons','Admin\CouponController@receiveCoupons');
+//使用优惠券
+Route::get('/admin/useCou','Admin\UcouponsController@useCou');
+//登录
+Route::get('/login','Admin\LoginController@login');
+Route::post('/dologin','Admin\LoginController@dologin');
+Route::group(['middleware' => ['login']], function () {  
+	//修改密码
+	Route::get('/admin/psw','Admin\LoginController@psw');
+	Route::get('/admin/mpsw','Admin\LoginController@mpsw');
+	//用户列表
+	Route::get('/admin/user','Admin\UserController@index');
+	//用户数据
+	Route::get('/admin/getUser','Admin\UserController@getUser');
+	//优惠券列表
+	Route::get('/admin/coupons','Admin\CouponController@index');
+	//删除优惠券
+	Route::get('/admin/delCoupon','Admin\CouponController@delCoupon');
+	//修改优惠券
+	Route::get('/admin/savecoupon','Admin\CouponController@savecoupon');	
+	Route::get('/admin/adminGetCoupons','Admin\CouponController@adminGetCoupons');	
+	//经销商
+	Route::get('/admin/adddealer','Admin\DealerController@add');
+	Route::get('/admin/downList','Admin\DealerController@downList');
+	Route::get('/admin/screenList','Admin\DealerController@screenList');
+	Route::get('/admin/deldealer','Admin\DealerController@deldealer');
+	Route::get('/admin/savedealer','Admin\DealerController@savedealer');
+	Route::get('/admin/dealer','Admin\DealerController@index');
+	//用户优惠券
+	Route::get('/admin/userCoupons','Admin\UcouponsController@index');
+	Route::get('/admin/getdata','Admin\UcouponsController@getUser');
+	//已使用优惠券
+	Route::get('/admin/use','Admin\UsecouponsController@index');
+	Route::get('/admin/useCoupons','Admin\UsecouponsController@useCoupons');
+	//小程序
+	Route::get('/admin/program','Admin\ProgramController@index');
+	Route::get('/admin/getprogram','Admin\ProgramController@downList');
+	Route::get('/admin/addprogram','Admin\ProgramController@add');
+	Route::get('/admin/delprogram','Admin\ProgramController@deldealer');
+	Route::get('/admin/saveprogram','Admin\ProgramController@savedealer');
+	//商戶
+	Route::get('/admin/merchant','Admin\MerchantController@index');
+	Route::get('/admin/addmerchant','Admin\MerchantController@add');
+	Route::get('/admin/getmer','Admin\MerchantController@downList');
+	Route::get('/admin/delmerchant','Admin\MerchantController@deldealer');
+	Route::get('/admin/savemerchant','Admin\MerchantController@savedealer');
+});
+Route::get('/admin/demo','Admin\CouponController@demo');

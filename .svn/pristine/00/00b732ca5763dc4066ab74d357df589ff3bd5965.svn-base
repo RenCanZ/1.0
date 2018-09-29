@@ -1,0 +1,193 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use DB;
+
+class UserController extends Controller
+{	
+
+	public static $OK = 0;
+	public static $IllegalAesKey = -41001;
+	public static $IllegalIv = -41002;
+	public static $IllegalBuffer = -41003;
+	public static $DecodeBase64Error = -41004;
+	//查询openid	
+	public function addopenid (Request $request)
+	{	
+		 //获取参数			
+		$data = $request -> only('data');
+		$data = json_decode($data['data'],true);
+		$openid = $data['openid'];
+		
+		// $appid = $data['appid'];
+		//获取session_id&rand
+		$session_data = $this -> myrand();
+		$select = DB::table('users') -> where('openid','=',$openid) -> first();
+		$id = isset($select -> id)?$select -> id:'';
+		if(empty($id)) {
+			// $phone = DB::table('users') -> where('phone','=',$) -> first();			
+			$data['user'] = '';
+			$data['session_data'] = $session_data;			
+			return $data;
+		}else{
+			$user_coupons = DB::table('user_coupon') -> join('coupons', 'coupons.id', '=', 'user_coupon.coupon_id') -> where('user_coupon.userid','=',$id) -> get();
+			$user_coupons = empty($user_coupons)?'':$user_coupons;
+			foreach($user_coupons as $k => $v) {
+				$user_coupons[$k] -> addtime = date('Y-m-d',$v -> addtime);
+				$user_coupons[$k] -> endtime = date('Y-m-d',$v -> endtime);
+			}
+			$data['user'] = $select;
+			$data['session_data'] = $session_data;
+			$data['user_coupons'] = $user_coupons;
+			return $data;
+		}	
+	}
+	
+	//添加用户
+	public function adduser (Request $request) 
+	{
+		session_write_close(); 				
+		$data = $request -> only('data');
+		$data = json_decode($data['data'],true);
+		$sid = isset($data['sid'])?$data['sid']:'';
+		if(!$sid) {
+			return '获取参数失败';
+		}	
+		session_id($sid);
+		session_start();		
+		$key = $_SESSION['val'];	
+		$token = isset($data['token'])?$data['token']:'';		
+		unset($data['token']);
+		ksort($data);
+		$md5 = '';
+		foreach($data as $k => $v) {
+			$md5 .= $k.'='.$v.'&';			
+		}
+		$info = rtrim($md5,'&').$key;
+		$md5 = md5($info);
+		if($md5 == $token) {	
+			$phonenum = isset($data['phone'])?$data['phone']:'';
+			$appid = $data['appid'];
+			$openid = $data['openid'];								
+			$sex = $data['sex'];	
+			$address = $data['address'];			
+			if(!$phonenum) {
+				$sessionKey = $data['sessionKey'];
+				$encryptedData = $data['encryptedData'];
+				$iv = $data['iv'];
+				$errCode = $this -> decryptData($appid,$sessionKey,$encryptedData,$iv,$phone);
+				if ($errCode == 0) {
+					$phonenum = json_decode($phone,true)['phoneNumber'];
+				} else {
+				    print($errCode . "\n");
+				}
+			}
+			$row = DB::table('users') -> where('openid','=',$openid) -> first();
+			if(!$row) {
+				$row = DB::table('users') -> where('phone','=',$phonenum) -> first();
+				if(!$row) {
+					$userid = DB::table('users') -> insertGetId(['faceimg' => $data['faceimg'],'nickname' => $data['nickname'],'sex' => $sex,'phone' => $phonenum,'address' => $address,'openid' => $openid,'addtime' => time()]);
+					if($userid > 0) {
+						$insert_user_pro = DB::table('user_pro') -> insert(['userid' => $userid,'openid' => $openid,'appid' => $appid]);
+						$user = DB::table('users') -> where('id','=',$userid) -> first();
+						$user = json_encode($user);
+						return $user;
+					}
+				}else{
+					$select = DB::table('users') -> where('phone','=',$phonenum) -> first();
+					$user_coupons = DB::table('user_coupon') -> join('coupons', 'coupons.id', '=', 'user_coupon.coupon_id') -> where('user_coupon.userid','=',$select -> id) -> get();
+					// dd($user_coupons);
+					$user_coupons = empty($user_coupons)?'':$user_coupons;
+					foreach($user_coupons as $k => $v) {
+						$user_coupons[$k] -> addtime = date('Y-m-d',$v -> addtime);
+						$user_coupons[$k] -> endtime = date('Y-m-d',$v -> endtime);
+					}
+					$user['user'] = $select;
+					$user['user_coupons'] = $user_coupons;
+					return $user;
+				}			
+			}else{
+				return '添加用户失败';
+			}					
+		}else{
+			return '参数信息错误';
+		}
+	}
+	
+	
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return view('user');
+    }
+
+    //用户数据
+    public function getUser()
+    {
+    	$data = DB::table('users') -> join('user_pro','user_pro.userid','=','users.id') -> get();
+    	foreach($data as $k => $v) {
+    		$data[$k] -> addtime = date('Y-m-d',$v -> addtime);
+    	}
+    	return $data;
+    }
+	
+	public function myrand()
+	{
+		session_start();
+		$rand='';
+		$randstr= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@~#$%^&*()_+';
+		$max = strlen($randstr)-1;
+		mt_srand((double)microtime()*1000000);
+		for($i=0;$i<32;$i++) {
+		   $rand .= $randstr[mt_rand(0,$max)];
+		}
+		$data['session_id'] = session_id();
+		$data['rand'] = $rand;
+		$_SESSION['val'] = $rand;
+		return $data;
+	}
+	/**
+	 * 检验数据的真实性，并且获取解密后的明文.
+	 * @param $encryptedData string 加密的用户数据
+	 * @param $iv string 与用户数据一同返回的初始向量
+	 * @param $data string 解密后的原文
+     *
+	 * @return int 成功0，失败返回对应的错误码
+	 */
+	public function decryptData($appid, $sessionKey, $encryptedData, $iv, &$phone )
+	{
+		if (strlen($sessionKey) != 24) {
+			return self::$IllegalAesKey;
+		}
+		$aesKey=base64_decode($sessionKey);
+
+        
+		if (strlen($iv) != 24) {
+			return self::$IllegalIv;
+		}
+		$aesIV=base64_decode($iv);
+
+		$aesCipher=base64_decode($encryptedData);
+
+		$result=openssl_decrypt( $aesCipher, "AES-128-CBC", $aesKey, 1, $aesIV);
+
+		$phoneObj=json_decode( $result );
+		if( $phoneObj  == NULL )
+		{
+			return self::$IllegalBuffer;
+		}
+		if( $phoneObj->watermark->appid != $appid )
+		{
+			return self::$IllegalBuffer;
+		}
+		$phone = $result;
+		return self::$OK;
+	}
+}

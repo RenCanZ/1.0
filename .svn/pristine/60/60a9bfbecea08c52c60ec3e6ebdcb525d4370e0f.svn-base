@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Redis;
+use DB;
+
+class ProgramController extends Controller
+{	
+    //添加商户
+    public function add (Request $request)
+    {
+        $data = $request -> all();
+        $res = DB::table('program') -> insert($data);
+        if($res) {
+            $id = DB::table('merchant') -> where('id','=',$data['merchant_id']) -> first();
+            $num = DB::table('dealer') -> where('id','=',$id -> dealer_id) -> first();
+            $num -> program_num += 1;
+            $res = DB::table('dealer') -> where('id','=',$id -> dealer_id) -> update(['program_num' => $num -> program_num]);
+            if($res) {
+                return json_encode($data);
+            }else{
+                return '添加失败';
+            }
+        }else{
+            return '添加失败';
+        }       
+    }
+
+    //获取数据
+    public function downList (Request $request)
+    {
+        $arr = [];
+        $d = $request -> all();
+        foreach($d as $k => $v) {
+            switch ($k) {
+                case 'name':
+                    array_push($arr,["program.name",'like',"%$v%"]);
+                    break;
+                case 'merchant_name':
+                    array_push($arr,["merchant.name",'like',"%$v%"]);
+                    break;
+                case 'type':
+                    array_push($arr,["$k",'=',"$v"]);
+                    break;
+                case 'appid':
+                    array_push($arr,["$k",'=',"$v"]);
+                    break;
+            }
+            foreach($arr as $key => $val) {
+                if(!$val[2]) {
+                    unset($arr[$key]);
+                }
+            }
+        }
+        // var_dump($arr);
+        if($arr) {
+             $data['program'] = DB::table('program') -> join('merchant','merchant.id','=','program.merchant_id')
+                         -> select(DB::raw('program.*,merchant.name as merchant_name')) -> where($arr)
+                         -> get();
+        }else{
+            $data['program'] = DB::table('program') -> join('merchant','merchant.id','=','program.merchant_id')
+                         -> select(DB::raw('program.*,merchant.name as merchant_name'))
+                         -> get();
+        }     
+        $data['merchant'] = DB::table('merchant') -> get();
+        return $data;
+    }
+
+    //删除数据
+    public function deldealer (Request $request)
+    {
+        $id = $request -> input('id');
+        $del = DB::table('program') -> where('id','=',$id) -> delete();
+        return $del;
+    }
+
+    //修改数据
+    public function savedealer (Request $request)
+    {
+        $id = $request -> input('id');
+        $data = $request -> except('id');
+        $res = DB::table('program') -> where('id','=',$id) -> update($data);
+        if(!$res) {
+            return false;
+        }
+        return $res;
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return view('program');
+    }
+
+}

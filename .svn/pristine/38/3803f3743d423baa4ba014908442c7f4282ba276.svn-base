@@ -1,0 +1,398 @@
+/**app.wxss**/
+	html,body{
+		width: 100%;
+		height: 100%;
+		padding:0px;
+		margin:0px;
+		font-size:13px;
+	}
+	a{
+		text-decoration:none;
+		color: #fff;
+	}
+	.page{
+	  width: 100%;
+	  height: 100%;
+	}
+	.txt-22{
+		font-size:22px;
+	}
+	.txt-20{
+		font-size:20px;
+	}
+	.txt-18{
+		font-size:18px;
+	}
+	.txt-16{
+		font-size:16px;
+	}
+	.txt-14{
+		font-size:14px;
+	}
+	.txt-12{
+		font-size:12px;
+	}
+	.txt-10{
+		font-size:10px;
+	}
+	.col-12{
+		flex: 0 0 100%;
+	}
+	.col-11{
+		flex: 0 0 91.666%;
+	}
+	.col-10{
+		flex: 0 0 83.333%;
+	}
+	.col-9{
+		flex: 0 0 75%;
+	}
+	.col-8{
+		flex: 0 0 66.666%;
+	}
+	.col-7{
+		flex: 0 0 58.333%;
+	}
+	.col-6{
+		flex: 0 0 50%;
+	}
+	.col-5{
+		flex: 0 0 41.666%;
+	}
+	.col-4{
+		flex: 0 0 33.3333%;
+	}
+	.col-3{
+		flex: 0 0 25%;
+	}
+	.col-2{
+		flex: 0 0 16.6%;
+	}
+	.col-1{
+		flex: 0 0 8.3%;
+	}
+	.block-row{
+		display:flex;
+	}
+	.block-row-bothcenter{
+		display:flex;
+		justify-content:center;
+		align-items:center;
+	}
+	.block-row-center{
+		display:flex;
+		justify-content:center;
+	}
+	.block-row-colcenter{
+		display:flex;
+		align-items:center;
+	}
+
+	.block-col{
+		flex-direction:column;
+		display:flex;
+	}
+	.block-col-bothcenter{
+		display:flex;
+		flex-direction:column;
+		justify-content:center;
+		align-items:center;
+	}
+	.block-col-center{
+		display:flex;
+		flex-direction:column;
+		justify-content:center;
+	}
+	.block-col-colcenter{
+		display:flex;
+		flex-direction:column;
+		align-items:center;
+	}
+	.line-layout{
+		display: flex;
+		flex-flow: row wrap;
+		align-content: flex-start;
+	}
+	@media
+	  only screen 
+    and (max-width: 760px), (min-device-width: 768px) 
+    and (max-device-width: 1024px)  {
+
+		/* Force table to not be like tables anymore */
+		table, thead, tbody, th, td, tr {
+			display: block;
+		}
+
+		/* Hide table headers (but not display: none;, for accessibility) */
+		thead tr {
+			position: absolute;
+			top: -9999px;
+			left: -9999px;
+		}
+
+		tr {
+		  margin: 0 0 1rem 0;
+		}
+      
+		tr:nth-child(odd) {
+		  background: #ccc;
+		}
+    
+		td {
+			/* Behave  like a "row" */
+			border: none;
+			border-bottom: 1px solid #eee;
+			position: relative;
+			padding-left: 50%;
+		}
+
+		td:before {
+			/* Now like a table header */
+			position: absolute;
+			/* Top/left values mimic padding */
+			top: 0;
+			left: 6px;
+			width: 45%;
+			padding-right: 10px;
+			white-space: nowrap;
+		}
+
+		/*
+		Label the data
+		You could also use a data-* attribute and content for this. That way "bloats" the HTML, this way means you need to keep HTML and CSS in sync. Lea Verou has a clever way to handle with text-shadow.
+		*/
+		td:nth-of-type(1):before { content: "名称"; }
+		td:nth-of-type(2):before { content: "等级"; }
+		td:nth-of-type(3):before { content: "地区"; }
+		td:nth-of-type(4):before { content: "客服id"; }
+		td:nth-of-type(5):before { content: "操作"; }
+		td:nth-of-type(6):before { content: "Secret Alias"; }
+		td:nth-of-type(7):before { content: "Date of Birth"; }
+		td:nth-of-type(8):before { content: "Dream Vacation City"; }
+		td:nth-of-type(9):before { content: "GPA"; }
+		td:nth-of-type(10):before { content: "Arbitrary Data"; }
+	}
+	td{
+		height:30px;
+		line-height:30px;
+	}
+	table{
+		width:100%;
+	}
+	tr{
+		text-align: center;
+	}
+	.bkcolor-gray{
+		background-color:#f1f2f3;
+	}
+	.bkcolor-black{
+		background-color:#424242;
+	}
+	.bkcolor-white{
+		background-color:#fff;
+	}
+	.color-white{
+		color:#ddd;
+	}
+	.header{
+		height:50px;		
+	}
+	.center{
+		flex:1;
+	}
+	.left-menu{
+		width:110px;
+		overflow:auto;
+	}
+	.left-menu-item{
+		display:flex;
+		align-items:center;
+		height:50px;
+	}
+	.left-menu-icon{
+		margin-right:5px;
+		margin-left:5px;
+	}
+	.left-menu-item-active{
+		background-color:#f1f2f3;
+		color:#424242;
+	}
+	.left-menu-item>img{
+		width:15px;
+		height:15px;
+		margin-left:5px;
+		margin-right:5px;
+	}
+	.menu-icon{
+		display: block;
+		float: left;
+		width: 36px;
+		height: 26px;
+		line-height: 0;
+		padding-top: 10px;
+		text-align: center;
+	}
+	.menu-icon>svg path{
+		fill: #888;
+	}
+	@media screen and (max-width: 600px) {
+		.left-menu{
+			width:100%;
+			position:absolute;
+			left:0px;
+			top:50px;
+			z-index:99;
+		}
+		.form-btn{
+			min-width:40px;
+		}
+		.my-dialog{
+			width:90%;
+		}
+		.popup-dialog{
+			color:#888;
+			width:80%;
+			position:relative;
+			top:-100px;
+		}
+		
+	}
+	
+	
+	
+	.main{
+		flex:1;		
+	}
+	.main-title{
+		margin:10px;
+		padding:10px;
+	}
+	.main-content{
+		margin:10px;
+		padding:10px;
+		flex:1;
+	}
+	.logoicon{
+		margin-left:20px;
+		margin-right:20px;
+		color:#e47512
+	}
+	.popup-level{
+		width:100%;
+		height:100%;
+		position:fixed;
+		left:0px;
+		top:0px;
+		background-color:rgba(88,88,88,0.5);
+		display:flex;
+		justify-content:center;
+		align-items:center;
+	}
+	.popup-dialog{
+		color:#888;
+		width:500px;
+		box-shadow:10px 10px 10px #707070;
+		position:relative;
+		top:-200px;
+	}
+	.dialog-buttons{
+		
+		height:50px;
+		font-size:13px;
+		display:flex;
+		border-top:solid 1px #c0c0c0;
+	}
+	
+	.dialog-buttons>div{
+		flex:1;
+		display:flex;
+		justify-content:center;
+		align-items:center;
+		cursor:pointer;
+		color:#0e5822;
+	}
+	.dialog-buttons>div+div{
+		border-left:solid 1px #c0c0c0;	
+	}
+	.dialog-info,.dialog-title{
+		padding:10px;
+		margin-bottom:20px;
+	}
+	.dialog-info{
+		font-size:16px;
+		color:#424242;
+	}
+	.dialog-title{
+		border-bottom:solid 1px #c0c0c0;
+	}
+	.icon{
+		font-family: FontAwesome;
+		font-size: 18px;
+	}
+	.my-dialog{
+		width:60%;
+		height:80%;
+		padding:10px;
+		display:flex;
+		flex-direction:column;
+	}
+	.edit-title{
+		height:40px;
+		display:flex;
+		align-items:center;
+		font-size:14px;
+		border-bottom:solid 1px #e0e0e0;
+		margin-bottom:10px;
+	}
+	.form-div{
+		display:flex;
+		align-items:center;
+		margin-bottom:20px;
+		height:25px;
+	}
+	.form-input{
+		border-radius: 0;
+		box-shadow: 0 0 0;
+		text-shadow: 0 0 0;
+		color: #666;
+		display: block;
+		height: 100%;
+		font-size: 14px;		
+		background-color: #fff;
+		background-image: none;
+		border: 1px solid #d8d8da;
+		transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+		flex:1;
+	}
+	.form-title {
+		display:flex;
+
+	}
+	.btn{
+		display: flex;
+		justify-content:center;
+		align-items:center;
+		padding:5px;
+		font-size: 14px;
+		font-weight: 400;
+		white-space: nowrap;
+		vertical-align: middle;
+		-ms-touch-action: manipulation;
+		touch-action: manipulation;
+		cursor: pointer;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		background-image: none;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		color: white;
+		background-color: #44ABF7;
+		-webkit-appearance: button;
+		cursor: pointer;
+	}
+	.form-btn{
+		min-width:100px;
+		margin-left:10px;
+	}
